@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> ☕️🍸🍻💖 </title>
+
+    <!-- WebP görselleri ve Müzik için ön yükleme -->
+    <link rel="preload" as="image" href="number11.webp">
+    <link rel="preload" as="image" href="number17.webp">
+    <link rel="preload" as="image" href="number18.webp">
+    <link rel="preload" as="audio" href="muzik.mp3">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: radial-gradient(circle at center, #2d122d 0%, #0f172a 100%);
+            color: #ffffff;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(30, 20, 40, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 35px 25px;
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(236, 72, 153, 0.15), 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 420px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(236, 72, 153, 0.25);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 19px;
+            font-weight: 600;
+            color: #fdf2f8;
+            min-height: 65px;
+            margin: 10px 0 20px 0;
+            line-height: 1.45;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .img-wrapper {
+            width: 100%;
+            max-width: 240px;
+            height: 200px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            transition: opacity 0.15s ease;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            min-height: 60px;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 700;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 18px rgba(236, 72, 153, 0.45);
+            z-index: 100;
+            width: 100%;
+        }
+
+        input[type="date"], input[type="time"] {
+            width: 100%;
+            padding: 14px;
+            border-radius: 16px;
+            border: 1px solid rgba(236, 72, 153, 0.5);
+            background: rgba(15, 23, 42, 0.8);
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+            text-align: center;
+            color-scheme: dark;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Preload ile hızlı yükleme sağlanan müzik etiketi -->
+<audio id="arkaPlanMuzik" loop preload="auto">
+    <source src="muzik.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+    <h1 id="question">Merhaba Gül lütfen müsait olduğun tarihi seçer misin ☕️🍸🍻</h1>
+    
+    <div class="img-wrapper">
+        <img id="anaGorsel" src="number11.webp" alt="Görsel">
+    </div>
+    
+    <div class="buttons" id="buttonArea">
+        <input type="date" id="tarihInput">
+        <button id="yesBtn" onclick="takvimTarihiKaydet()">Tarihi Onayla </button>
+    </div>
+</div>
+
+<script>
+    const webpListesi = ["number11.webp", "number17.webp", "number18.webp"];
+    const yuklenenGorseller = {};
+
+    webpListesi.forEach(src => {
+        const img = new Image();
+        img.src = src;
+        yuklenenGorseller[src] = img;
+    });
+
+    let secilenTarih = "";
+    let secilenSaat = "";
+
+    // MÜZİĞİ EN HIZLI BAŞLATAN MEKANİZMA
+    const muzik = document.getElementById('arkaPlanMuzik');
+
+    function muzigiBaslat() {
+        if (muzik.paused) {
+            muzik.play().then(() => {
+                // Müzik başladıysa dinleyicileri kaldırıyoruz
+                document.removeEventListener('click', muzigiBaslat);
+                document.removeEventListener('touchstart', muzigiBaslat);
+            }).catch(() => {});
+        }
+    }
+
+    // Sayfa açıldığı an otomatik oynatmayı dener
+    window.addEventListener('load', () => {
+        muzik.play().catch(() => {
+            // Tarayıcı engellerse ekrana yapılan ilk tık/dokunuşta anında çalar
+            document.addEventListener('click', muzigiBaslat, { once: true });
+            document.addEventListener('touchstart', muzigiBaslat, { once: true });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const bugun = new Date().toISOString().split('T')[0];
+        document.getElementById('tarihInput').min = bugun;
+    });
+
+    function gorselDegistir(yeniSrc) {
+        const resim = document.getElementById('anaGorsel');
+        resim.style.opacity = '0.5';
+        
+        if (yuklenenGorseller[yeniSrc] && yuklenenGorseller[yeniSrc].complete) {
+            resim.src = yeniSrc;
+            resim.style.opacity = '1';
+        } else {
+            const tempImg = new Image();
+            tempImg.src = yeniSrc;
+            tempImg.onload = () => {
+                resim.src = yeniSrc;
+                resim.style.opacity = '1';
+            };
+        }
+    }
+
+    function takvimTarihiKaydet() {
+        muzigiBaslat(); // Her ihtimale karşı ilk butonda da tetikliyoruz
+
+        const inputVal = document.getElementById('tarihInput').value;
+        if (!inputVal) {
+            alert("Lütfen bir tarih seçiniz!");
+            return;
+        }
+
+        const parcalar = inputVal.split('-');
+        secilenTarih = `${parcalar[2]}/${parcalar[1]}/${parcalar[0]}`;
+
+        saatEkraniGetir();
+    }
+
+    function saatEkraniGetir() {
+        document.getElementById('question').innerHTML = "Şimdi sıraa saatte ";
+        gorselDegistir("number18.webp");
+
+        const buttonArea = document.getElementById('buttonArea');
+        buttonArea.innerHTML = `
+            <input type="time" id="saatInput" value="20:00">
+            <button id="yesBtn" style="width: 100%;" onclick="saatiKaydet()">Saati Onayla </button>
+        `;
+    }
+
+    function saatiKaydet() {
+        const saatVal = document.getElementById('saatInput').value;
+        if (!saatVal) {
+            alert("Lütfen bir saat seçiniz!");
+            return;
+        }
+
+        secilenSaat = saatVal;
+        
+        document.getElementById('question').innerHTML = "Harika! Sözleştik <br>WhatsApp'a yönlendiriliyorsun...";
+        gorselDegistir("number17.webp");
+
+        const buttonArea = document.getElementById('buttonArea');
+        buttonArea.innerHTML = `
+            <button id="yesBtn" style="transform: scale(1.05);" onclick="whatsappGonder()">WhatsApp'a Geç </button>
+        `;
+    }
+
+    function whatsappGonder() {
+        const telefonNumarasi = "905071265840"; 
+        const mesaj = encodeURIComponent(`${secilenTarih} saat ${secilenSaat} için sözleştik `);
+        
+        window.location.href = `https://wa.me/${telefonNumarasi}?text=${mesaj}`;
+    }
+</script>
+
+</body>
+</html>
+bu kodda whatsapa yönlendirmeyi instagrama yapalım insta kullanıcı adı eren_okutan
